@@ -1,36 +1,19 @@
+import json
+
 from fastapi.testclient import TestClient
+
 from main import app
 
-
-# Instantiate the testing client with our app.
 client = TestClient(app)
 
-# Test "/" endpoint
-def test_api_locally_get_root():
-    r = client.get("/")
+
+def test_post_data_success():
+    data = {"feature_1": 1, "feature_2": "test string"}
+    r = client.post("/data/", data=json.dumps(data))
     assert r.status_code == 200
-    assert r.json() == {"greeting": "Hello World!"}
 
 
-# Test POST method with "/items" endpoint
-def test_create_item():
-    r = client.post(
-        "/items/",
-        headers={"X-Token": "coneofsilence"},
-        json={"name": "Air Jordan 1", "tags": "shoes", "item_id": 1},
-    )
-    assert r.status_code == 200
-    assert r.json() == {
-        "name": "Air Jordan 1",
-        "tags": "shoes",
-        "item_id": 1
-    }
-
-
-# Test GET method with "/item/1?count=10" endpoint
-def test_get_item():
-    r = client.get(
-        "/items/1?count=10",
-        headers={"X-Token": "coneofsilence"},
-    )
-    assert r.status_code == 200
+def test_post_data_fail():
+    data = {"feature_1": -5, "feature_2": "test string"}
+    r = client.post("/data/", data=json.dumps(data))
+    assert r.status_code == 400
